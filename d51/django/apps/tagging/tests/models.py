@@ -1,16 +1,19 @@
 from d51.django.apps.tagging.models import *
+from d51.django.apps.tagging.tests.support.models import Post, Article
+from d51.django.apps.tagging.tests.utils import *
 from django.test import TestCase
-from project.mysite.models import *
-import random
-
-
-def generate_random_tag():
-    return Tag.objects.create(title=random.randint(1, 100))
-
-def generate_random_tags(number):
-    return [generate_random_tag() for i in range(number)]
 
 class TagTestCase(TestCase):
+    def setUp(self):
+        # Not sure why, but for some reason ScheduleItem table isn't getting
+        # flushed properly.  We need to make sure to delete everything that's
+        # left over prior to starting the tests.
+
+        create_model_tables()
+
+    def tearDown(self):
+        destroy_model_tables()
+
     def test_tags_can_have_other_tags(self):
         [a, b] = generate_random_tags(2)
         a.parent = b
